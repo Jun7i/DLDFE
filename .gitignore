@@ -12,8 +12,7 @@ venv/
 config/secret_config.yaml
 
 # Ignore data files
-data/raw/
-data/processed/
+data/
 # Keep the external data if it's small and static, otherwise ignore
 # data/external/
 

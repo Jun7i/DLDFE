@@ -1,1 +1,0 @@
-# Spark streaming script to consume from Kafka, process, and save

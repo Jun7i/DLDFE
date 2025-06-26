@@ -16,10 +16,3 @@ from newsapi import NewsApiClient
 import torch
 print(torch.cuda.is_available())
 
-import pyspark
-from pyspark.sql import SparkSession
-
-
-from pyowm import OWM
-from pyowm.utils import config
-from pyowm.utils import timestamps

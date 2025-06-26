@@ -3,164 +3,134 @@
 - [中文](README_zh.md)
 
 ---
+# Proactive Backorder Prediction for Supply Chain Optimization
 
-# Dynamic Demand Forecasting for E-commerce
+### A Machine Learning Model to Identify At-Risk Products *Before* They Go Out of Stock
 
-### A "Niche Retailer" Model for Outdoor & Adventure Gear
+This project builds and evaluates a binary classification model to solve a critical supply chain problem: **predicting product backorders**. By identifying which items are at high risk of going out of stock, businesses can move from a *reactive* (fire-fighting) to a *proactive* (preventive) inventory management strategy.
 
-This project builds a complete system to forecast product demand for a niche e-commerce retailer (e.g., "Outdoor & Adventure Gear"). It ingests data from multiple external sources—such as public news, weather forecasts, and social media trends—to create a predictive model that helps a business optimize its supply chain.
+This model is designed to be used by a logistics or supply chain manager to generate a daily "at-risk" report, allowing them to take preventive action and optimize the flow of goods.
 
-## Business Value
+## 🚀 The Business Problem
 
-For a specialized retailer (like REI or a local outdoor shop), this model provides concrete, actionable insights to:
+In any supply chain, a product backorder is a major failure. It represents an order for an item that is currently out of stock. This leads to:
 
-  * **Prevent Stockouts:** Identify a spike in social media `#hiking` posts and a sunny weather forecast to proactively increase stock of "hiking boots" and "daypacks" in that region.
-  * **Reduce Overstocking:** Avoid ordering excess "skis" and "snowboards" if news sentiment and weather models predict a warm, low-snow winter.
-  * **Optimize Logistics:** Reroute shipments to warehouses in regions where demand is predicted to spike, *before* the demand actually hits.
-  * **Target Marketing:** Launch ad campaigns for "rain jackets" in the Pacific Northwest when a 5-day rainy forecast is detected.
+* **Lost Revenue:** The customer may cancel the order and buy from a competitor.
+* **Poor Customer Satisfaction:** Leads to customer churn and damages brand reputation.
+* **Increased Operational Costs:** Expedited shipping and manual interventions are expensive.
 
-## Tech Stack
+The goal is not just to forecast *demand*, but to predict the *risk of failure* in meeting that demand.
 
-  * **Programming:** Python 3.10+
-  * **Data Processing:** Pandas
-  * **Machine Learning:** XGBoost (or LightGBM), Scikit-learn
-  * **NLP:** VADER (for fast sentiment analysis)
-  * **APIs:** OpenWeatherMap, NewsAPI.org, Twitter API v2
-  * **Dashboard:** Streamlit (or Tableau)
-  * **Environment:** Jupyter Notebooks (for exploration), VS Code (for scripting)
+## 📊 Business Value
 
-## Data Pipeline & Architecture
+This model provides concrete, actionable insights for an operations team to:
 
-This project runs as a daily batch process, which is managed by a single Python script.
+* **Prevent Lost Sales:** Proactively identify the top 5% of products at high risk of backordering and expedite their inbound shipments.
+* **Optimize Inventory Capital:** Avoid wasting capital on overstocking "safe" products and re-allocate it to buffer "at-risk" items.
+* **Increase Customer Satisfaction:** Drastically reduce the number of "out of stock" notices and fulfillment delays, improving customer loyalty.
+* **Drive Proactive Operations:** Give a supply chain manager a data-driven "warning list" instead of forcing them to react to problems as they happen.
 
-1.  **Data Acquisition:** A Python script (`src/data_pipeline.py`) runs once per day.
-      * It fetches 5-day weather forecasts from **OpenWeatherMap** for key regions (e.g., "Denver, CO", "Seattle, WA").
-      * It fetches relevant news articles from **NewsAPI** using queries like `q="hiking" OR "camping" OR "ski season"`.
-      * It fetches recent tweets from the **Twitter API** using queries like `#hiking OR #camping OR "new gear"`.
-      * It loads the static, historical sales data (`data/raw/mock_sales.csv`).
+## 💾 The Dataset
 
-2.  **Data Processing & NLP:**
-      * **News:** News article descriptions are run through VADER to get a daily average `news_sentiment_score`.
-      * **Twitter:** Tweet text is run through VADER to get a daily average `twitter_sentiment_score`.
-      * **Weather:** Forecasts are flattened into features like `day_3_forecast_temp` and `day_3_forecast_is_rain`.
-      * **Sales:** Historical sales data is aggregated by `date`, `region`, and `product_category`.
+This project uses the **"Kaggle: Predict Material Backorders"** dataset. It is a large, real-world, and highly imbalanced dataset from a parts manufacturer.
 
-3.  **Feature Engineering & Merging:**
-      * All data sources are merged into a single "master" dataset.
-      * **Lag Features** are created (e.g., `units_sold_7_days_ago`).
-      * **Forecast Features** are created (e.g., `weather_forecast_3_days_from_now`).
-      * The final, clean dataset is saved to `data/processed/final_features.csv`.
+* **Source:** [Kaggle: Back Order Prediction Dataset](https://www.kaggle.com/datasets/gowthammiryala/back-order-prediction-dataset)
+* **Size:** ~1.69 million training observations
+* **Features:** 22 features, including:
+    * `national_inv`: Current inventory level
+    * `lead_time`: Time from order to delivery
+    * `sales_1_month`, `sales_3_month`, etc.: Historical sales figures
+    * `forecast_3_month`, `forecast_6_month`, etc.: Internal demand forecasts
+    * `went_on_backorder`: The target variable (Yes/No)
+* **Core Challenge:** The dataset is **extremely imbalanced**. Fewer than 1.7% of all items went on backorder. This makes "accuracy" a useless metric and requires a specialized approach to modeling and evaluation.
 
-4.  **Modeling:**
-      * An XGBoost model is trained on `final_features.csv` to predict a future value (e.g., `units_sold_in_7_days`).
-      * The trained model is saved to `models/demand_model.pkl`.
+## 🛠️ Tech Stack
 
-5.  **Dashboard:**
-      * A Streamlit app (`src/dashboard.py`) loads the *latest* processed data and the *trained model*.
-      * It generates new predictions and displays them on an interactive dashboard for a "Logistics Manager."
+* **Programming:** Python 3.10+
+* **Data Analysis:** Pandas, NumPy
+* **Data Visualization:** Matplotlib, Seaborn
+* **Machine Learning:** Scikit-learn, XGBoost
+* **Imbalance Handling:** `imblearn` (for SMOTE)
+* **Environment:** Jupyter Notebooks, VS Code
 
-## Project Structure
+## 📈 Analysis & Modeling Workflow
+
+1.  **Data Cleaning & EDA:**
+    * Loaded the 1.69M-row dataset (`Training_BOP.csv`) and handled missing values.
+    * Performed exploratory analysis to understand key features.
+
+2.  **Feature Engineering:**
+    * Added new features like `inventory_to_sales_ratio`, `forecast_error`.
+    * Encoded categorical variables using one-hot encoding.
+
+3.  **Imbalance Handling:**
+    * **Baseline:** Raw data.
+    * **SMOTE:** Oversampling.
+    * **Class Weighting:** Penalize rare misclassification.
+
+4.  **Modeling & Evaluation:**
+    * Trained Logistic Regression, RandomForest, XGBoost.
+    * Evaluated using Precision, Recall, F1-score, and PR-AUC.
+
+## 💡 Key Results & Recommendations
+
+.
+
+### **Business Actions**
+
+
+
+## 📁 Project Structure
 
 ```
-dynamic-demand-forecasting/
+product-backorder-prediction/
 ├── data/
-│   ├── raw/
-│   │   ├── mock_sales.csv
-│   │   ├── news_data_2025-10-25.json
-│   │   ├── weather_data_2025-10-25.json
-│   │   └── twitter_data_2025-10-25.json
-│   ├── processed/
-│   │   └── final_features.csv
-│
+│   ├── Training_BOP.csv
+│   └── Testing_BOP.csv
 ├── notebooks/
-│   ├── 01_data_exploration.ipynb
-│   ├── 02_feature_engineering.ipynb
-│   ├── 03_model_training.ipynb
-│
+│   ├── 01_EDA_and_Data_Cleaning.ipynb
+│   ├── 02_Feature_Engineering_and_Modeling.ipynb
+│   └── 03_Model_Evaluation_and_Interpretation.ipynb
 ├── src/
 │   ├── __init__.py
-│   ├── api_utils.py
-│   ├── data_pipeline.py
-│   ├── ml_pipeline.py
-│   └── dashboard.py
-│
-├── models/
-│   └── demand_model.pkl
-│
-├── .env.example
+│   ├── utils.py
+│   ├── models/
+│   │   └── backorder_model_xgb.pkl
+│   └── images/
+│       ├── imbalance_plot.png
+│       ├── pr_curve.png
+│       └── feature_importance.png
 ├── .gitignore
 ├── requirements.txt
 └── README.md
 ```
 
-## Setup & Installation
+## 🔌 Setup & How to Run
 
-1.  **Clone the Repository:**
-
+1. **Clone the Repo:**
     ```bash
-    git clone https://github.com/your-username/dynamic-demand-forecasting.git
-    cd dynamic-demand-forecasting
+    git clone https://github.com/your-username/product-backorder-prediction.git
+    cd product-backorder-prediction
     ```
-
-2.  **Create a Python Virtual Environment:**
-
+2. **Create Virtual Environment:**
     ```bash
     python -m venv venv
+    source venv/bin/activate  # macOS/Linux
+    # .\venv\Scripts\activate  # Windows
     ```
-
-      * On macOS/Linux: `source venv/bin/activate`
-      * On Windows: `.env\Scriptsctivate`
-
-3.  **Install Dependencies:**
-
+3. **Install Dependencies:**
     ```bash
     pip install -r requirements.txt
     ```
-
-4.  **Set Up API Keys:**
-
-      * Sign up for accounts at [NewsAPI.org](https://newsapi.org/), [OpenWeatherMap](https://openweathermap.org/api), and the [Twitter Developer Portal](https://developer.twitter.com/en/portal/dashboard).
-      * Copy the example `.env` file:
-        ```bash
-        cp .env.example .env
-        ```
-      * Open `.env` and add your secret API keys:
-        ```plaintext
-        NEWS_API_KEY="YOUR_KEY_HERE"
-        OPENWEATHER_API_KEY="YOUR_KEY_HERE"
-        TWITTER_BEARER_TOKEN="YOUR_TOKEN_HERE"
-        ```
-
-5.  **Add Mock Sales Data:**
-
-      * Prepare a CSV dataset with columns like `date`, `region`, `product_category`, and `units_sold`.
-      * Save it as `data/raw/mock_sales.csv`.
-
-## How to Run
-
-1.  **Run Data Pipeline:**
-    ```bash
-    python src/data_pipeline.py
-    ```
-
-2.  **Explore and Train Model:**
+4. **Download Dataset:**
+    * From [Kaggle](https://www.kaggle.com/datasets/gowthammiryala/back-order-prediction-dataset)
+5. **Run Notebooks:**
     ```bash
     jupyter notebook
     ```
 
-3.  **Train Final Model:**
-    ```bash
-    python src/ml_pipeline.py
-    ```
+## 🚀 Future Improvements
 
-4.  **Launch Dashboard:**
-    ```bash
-    streamlit run src/dashboard.py
-    ```
-
-## Future Improvements
-
-  * **Better NLP:** Use a pre-trained transformer model like `distilBERT`.
-  * **More Data:** Add Google Trends or holiday data.
-  * **Orchestration:** Automate with Apache Airflow or Mage.
-  * **Deployment:** Host dashboard on Streamlit Cloud.
+* **Hyperparameter Tuning:** Use Optuna or Hyperopt.  
+* **Cost-based Evaluation:** Add cost sensitivity.  
+* **Deployment:** Streamlit dashboard for real-time use.

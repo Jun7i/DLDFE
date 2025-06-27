@@ -15,8 +15,11 @@ config/secret_config.yaml
 data/
 test.csv
 train.csv
-# Keep the external data if it's small and static, otherwise ignore
-# data/external/
+test_processed.csv
+train_processed.csv
+train_clean.csv
+test_clean.csv
+
 
 # Ignore saved models
 models/

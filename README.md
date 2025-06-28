@@ -74,11 +74,33 @@ This project uses the **"Kaggle: Predict Material Backorders"** dataset. It is a
 
 ## 💡 Key Results & Recommendations
 
-.
+The model successfully identifies 41% of all actual backorders (Recall = 0.41) on the unseen test data. While this means some backorders are still missed, it provides supply chain planners with a powerful early warning system for a large portion of potential stockouts.
+
+Threshold Optimization is Crucial: The model's default 0.5 probability threshold yields the 41% recall. However, this can be adjusted to meet specific business needs:
+
+- For Higher Detection (Aggressive Strategy): Lowering the threshold to 0.1 increases the detection rate to 64% of all backorders, allowing planners to be more proactive at the cost of more false alarms (Precision drops to 8%).
+- For Higher Confidence (Conservative Strategy): Increasing the threshold to 0.8 improves the alert quality, with 22% of alerts being correct backorders, though this only captures 25% of total backorders.
+
+Key Predictive Drivers: The most important features driving backorder predictions are:
+- 6-Month Sales Forecast (forecast_6_month)
+- Current Inventory Level (national_inv)
+- 3-Month Sales Forecast (forecast_3_month)
 
 ### **Business Actions**
 
+Implement a Prioritized Watchlist: Use the model's probability scores to create a daily or weekly "Backorder Risk" watchlist for supply chain planners. Items with the highest predicted probability should be investigated first.
 
+Action: Start with a threshold of 0.5. This provides a good balance and correctly identifies 1,107 potential backorder events in the test set that can be proactively managed.
+
+Focus on Key Drivers: Since forecasts and inventory are the top predictors, create specific alerts for items where the forecast_6_month is high but the national_inv is low. This simple heuristic, informed by the model, can serve as a quick, secondary check.
+
+Optimize Inventory Strategy Based on Recall Needs:
+
+For critical, high-cost-of-failure parts, use a low threshold (e.g., 0.2). It's better to carry extra inventory for a few non-critical items than to have a production line stop.
+
+For less critical, low-cost parts, use a higher threshold (e.g., 0.7) to reduce the noise from false positives and focus planners' attention.
+
+Feedback Loop for Continuous Improvement: Track the model's predictions against actual outcomes. Use this data to periodically retrain the model and refine the classification threshold based on the real-world cost of false positives (unneeded inventory) versus false negatives (missed backorders).
 
 ## 📁 Project Structure
 

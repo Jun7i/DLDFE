@@ -13,6 +13,7 @@ config/secret_config.yaml
 
 # Ignore data files
 data/
+*.csv
 test.csv
 train.csv
 test_processed.csv

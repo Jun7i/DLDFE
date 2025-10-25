@@ -8,21 +8,21 @@ from pyowm.utils import config
 from pyowm.utils import timestamps
 
 ## AMAZON Product detail Example
-def fetch_amazon_product_details():
+# def fetch_amazon_product_details():
     
 
-    url = "https://real-time-amazon-data.p.rapidapi.com/product-details"
+#     url = "https://real-time-amazon-data.p.rapidapi.com/product-details"
 
-    querystring = {"asin":"B07ZPKBL9V","country":"US"}
+#     querystring = {"asin":"B07ZPKBL9V","country":"US"}
 
-    headers = {
-        "x-rapidapi-key": "91ebf5d894mshd420be8da16386ap104b89jsn1b54e3f6792c",
-        "x-rapidapi-host": "real-time-amazon-data.p.rapidapi.com"
-    }
+#     headers = {
+#         "x-rapidapi-key": "91ebf5d894mshd420be8da16386ap104b89jsn1b54e3f6792c",
+#         "x-rapidapi-host": "real-time-amazon-data.p.rapidapi.com"
+#     }
 
-    response = requests.get(url, headers=headers, params=querystring)
+#     response = requests.get(url, headers=headers, params=querystring)
 
-    print(response.json())
+#     print(response.json())
 
 ## TWITTER API Example
 def fetch_twitter_data():

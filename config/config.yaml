@@ -1,0 +1,27 @@
+# Configuration for file paths, model parameters, and API topics
+
+file_paths:
+  raw_data: "data/raw/"
+  processed_data: "data/processed/"
+  external_data: "data/external/"
+  models: "models/"
+  demand_model: "models/demand_forecaster.joblib"
+  sentiment_model: "models/nlp_sentiment.pkl"
+
+model_params:
+  xgboost:
+    n_estimators: 100
+    learning_rate: 0.1
+    max_depth: 5
+    # Add other XGBoost parameters here
+
+kafka_topics:
+  twitter_topic: "twitter_stream"
+  weather_topic: "weather_data"
+  amazon_topic: "amazon_products"
+  news_topic: "news_articles"
+
+spark_config:
+  app_name: "LogisticsForecasting"
+  master: "local[*]"
+

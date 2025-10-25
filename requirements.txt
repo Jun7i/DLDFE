@@ -1,0 +1,18 @@
+pandas
+numpy
+--index-url https://download.pytorch.org/whl/cu121
+torch
+torchvision
+torchaudio
+transformers
+kafka-python
+pyspark
+vaderSentiment
+xgboost
+lightgbm
+scikit-learn
+requests
+matplotlib
+seaborn
+newsapi-python
+newsapi-python

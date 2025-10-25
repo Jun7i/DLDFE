@@ -1,0 +1,32 @@
+# Ignore Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+*.egg-info/
+
+# Ignore sensitive files
+.env
+config/secret_config.yaml
+
+# Ignore data files
+data/raw/
+data/processed/
+# Keep the external data if it's small and static, otherwise ignore
+# data/external/
+
+# Ignore saved models
+models/
+*.joblib
+*.pkl
+
+# Ignore notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
